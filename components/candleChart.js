@@ -1,23 +1,14 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-
-import useWebSocket from 'react-use-websocket';
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 
 import * as am5 from "@amcharts/amcharts5";
 import * as am5xy from "@amcharts/amcharts5/xy";
 import * as am5stock from "@amcharts/amcharts5/stock";
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 
-const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-candle1m" }) => {
+const CandleChart = ({ instId, channel, lastMessage = null }) => {
     const chartRef = useRef(null);
     const chartControlsRef = useRef(null);
     const dataRef = useRef([]); // This ref will hold the accumulated data
-    const lastMessageRef = useRef(null);
-
-    // Using a ref to track the amCharts instance
-    const valueSeriesRef = useRef(null);
-    const sbSeriesRef = useRef(null);
-
-    const [oneTimeStateSetting, setOneTimeStateSetting] = useState(null);
 
     // Basetime of chart
     const baseInterval = {
@@ -25,31 +16,7 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
         count: 1
     };
 
-    // WebSocket connection URL
-    const socketUrl = 'wss://wspap.okx.com:8443/ws/v5/business?brokerId=9999';
-    // business
-    // public
-
-    // The hook returns a send function and the last message received
-    const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-        onOpen: () => console.log('WebSocket Connected'),
-        // Will attempt to reconnect on all close events
-        shouldReconnect: (closeEvent) => true,
-    });
-
-    // Send the subscription message when the component mounts
-    useEffect(() => {
-        const message = {
-            op: 'subscribe',
-            args: [
-                {
-                    channel: channel,
-                    instId: instId,
-                },
-            ],
-        };
-        sendMessage(JSON.stringify(message));
-    }, [instId, sendMessage]);
+    // console.log("Candle Chart props", { instId, channel, lastMessage });
 
     // This effect runs whenever lastMessage changes
     useEffect(() => {
@@ -62,15 +29,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
             }
         }
     }, [lastMessage, instId]); // Dependencies
-
-    // You can use lastMessage for the most recent message
-    const parsedMessage = lastMessage ? JSON.parse(lastMessage.data) : null;
-
-    lastMessageRef.current = lastMessage ? JSON.parse(lastMessage.data) : null;
-
-    if (!oneTimeStateSetting && parsedMessage && parsedMessage?.arg?.channel === channel && parsedMessage?.arg?.instId === instId) {
-        parsedMessage && parsedMessage?.data && parsedMessage?.data?.length && setOneTimeStateSetting(parsedMessage);
-    }
 
     let root, stockChart, mainPanel, valueAxis, dateAxis, valueSeries, valueLegend, volumeAxisRenderer, volumeValueAxis, volumeSeries, sbSeries, scrollbar, sbDateAxis, sbValueAxis, lastDataItem, lastValue, toolbar;
 
@@ -236,22 +194,12 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
             ]
         });
 
-        // Load initial data for the first series using the simulated socket datafirst
-        chartRef.current = stockChart;
-
-        // Assign the series to refs after creation
-        valueSeriesRef.current = valueSeries;
-        sbSeriesRef.current = sbSeries;
         chartRef.current = { valueSeries, sbSeries, stockChart, root };
 
         return () => {
             root.dispose();
         };
-    }, [oneTimeStateSetting]);
-
-    useEffect(() => {
-        oneTimeStateSetting && oneTimeStateSetting.data && parsedMessage && parsedMessage.data && parsedMessage.data.length && addData(parsedMessage.data);
-    }, [parsedMessage, oneTimeStateSetting])
+    }, []);
 
     // Function to add new data from the WebSocket to the chart
     function addData(newDataArray) {
@@ -298,25 +246,12 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
     }
 
     return (
-        <>
-            <div className='p-4 flex flex-col items-center justify-center gap-3 w-full'>
-                <h2 className="text-xl font-bold">{instId}</h2>
-                <h3>Channel: {channel}</h3>
-                <div className='flex flex-col justify-center items-center gap-2'>
-                    {parsedMessage && parsedMessage.data && parsedMessage.data.length && parsedMessage.data[0].map((item, idx, arr) => {
-                        return (
-                            <p key={idx}>{item}</p>
-                        )
-                    })}
-                </div>
-            </div>
-            <div className="w-full h-full">
-                <div id="chartcontrols" ref={chartControlsRef} style={{ height: "auto", padding: "5px 45px 0 15px" }} />
-                <div id="chartdiv" ref={chartRef} style={{ width: "100%", height: "500px" }} />
-                <p>Candle Chart</p>
-            </div>
-        </>
+        <div className="w-full h-full">
+            <h1 className="py-2 text-center font-bold text-2xl text-gray-900">Candle Chart</h1>
+            <div id="chartcontrols" ref={chartControlsRef} style={{ height: "auto", padding: "5px 45px 0 15px" }} />
+            <div id="chartdiv" ref={chartRef} style={{ width: "100%", height: "500px" }} />
+        </div>
     );
 };
 
-export default SocketDataWithChart;
+export default CandleChart;
