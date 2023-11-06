@@ -11,7 +11,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
     const chartRef = useRef(null);
     const chartControlsRef = useRef(null);
     const dataRef = useRef([]); // This ref will hold the accumulated data
-    const lastUpdateRef = useRef(Date.now()); // Stores the Unix time of the last update
     const lastMessageRef = useRef(null);
 
     // Using a ref to track the amCharts instance
@@ -19,7 +18,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
     const sbSeriesRef = useRef(null);
 
     const [oneTimeStateSetting, setOneTimeStateSetting] = useState(null);
-    const [socketData, setSocketData] = useState(null);
     const [chartCreated, setChartCreated] = useState(false);
 
     // Basetime of chart
@@ -27,7 +25,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
         timeUnit: "millisecond",
         count: 1
     };
-
 
     // WebSocket connection URL
     const socketUrl = 'wss://wspap.okx.com:8443/ws/v5/business?brokerId=9999';
@@ -75,9 +72,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
     if (!oneTimeStateSetting && parsedMessage && parsedMessage?.arg?.channel === channel && parsedMessage?.arg?.instId === instId) {
         parsedMessage && parsedMessage?.data && parsedMessage?.data?.length && setOneTimeStateSetting(parsedMessage);
     }
-    // else {
-    //     console.log("In Error Situations: ", { parsedMessage });
-    // }
 
     let root, stockChart, mainPanel, valueAxis, dateAxis, valueSeries, valueLegend, volumeAxisRenderer, volumeValueAxis, volumeSeries, sbSeries, scrollbar, sbDateAxis, sbValueAxis, lastDataItem, lastValue, toolbar;
 
@@ -215,33 +209,33 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
             fillOpacity: 0.3
         });
 
-        // // Stock toolbar
-        // // https://www.amcharts.com/docs/v5/charts/stock/toolbar/
-        // toolbar = am5stock.StockToolbar.new(root, {
-        //     container: document.getElementById("chartcontrols"),
-        //     stockChart: stockChart,
-        //     controls: [
-        //         am5stock.IndicatorControl.new(root, {
-        //             stockChart: stockChart,
-        //             legend: valueLegend
-        //         }),
-        //         am5stock.DateRangeSelector.new(root, {
-        //             stockChart: stockChart
-        //         }),
-        //         am5stock.PeriodSelector.new(root, {
-        //             stockChart: stockChart
-        //         }),
-        //         am5stock.DrawingControl.new(root, {
-        //             stockChart: stockChart
-        //         }),
-        //         am5stock.ResetControl.new(root, {
-        //             stockChart: stockChart
-        //         }),
-        //         am5stock.SettingsControl.new(root, {
-        //             stockChart: stockChart
-        //         })
-        //     ]
-        // });
+        // Stock toolbar
+        // https://www.amcharts.com/docs/v5/charts/stock/toolbar/
+        toolbar = am5stock.StockToolbar.new(root, {
+            container: document.getElementById("chartcontrols"),
+            stockChart: stockChart,
+            controls: [
+                am5stock.IndicatorControl.new(root, {
+                    stockChart: stockChart,
+                    legend: valueLegend
+                }),
+                am5stock.DateRangeSelector.new(root, {
+                    stockChart: stockChart
+                }),
+                am5stock.PeriodSelector.new(root, {
+                    stockChart: stockChart
+                }),
+                am5stock.DrawingControl.new(root, {
+                    stockChart: stockChart
+                }),
+                am5stock.ResetControl.new(root, {
+                    stockChart: stockChart
+                }),
+                am5stock.SettingsControl.new(root, {
+                    stockChart: stockChart
+                })
+            ]
+        });
 
         // Load initial data for the first series using the simulated socket datafirst
         // oneTimeStateSetting && oneTimeStateSetting.data && oneTimeStateSetting.data.length && processDataAndLoad(oneTimeStateSetting.data, [valueSeries, sbSeries]);
@@ -256,43 +250,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
             root.dispose();
         };
     }, [oneTimeStateSetting]);
-
-    // Load initial data for the first series using the simulated socket data
-    function processDataAndLoad(dataArray, series) {
-        let data = dataArray?.map(function (item) {
-            return {
-                Date: parseInt(item[0]), // Unix timestamp to Date object
-                Open: parseFloat(item[1]),
-                High: parseFloat(item[2]),
-                Low: parseFloat(item[3]),
-                Close: parseFloat(item[4]),
-                Volume: parseFloat(item[5])
-            };
-        });
-
-        // Process data (convert dates and values)
-        let processor = am5.DataProcessor.new(root, {
-            dateFields: ["Date"],
-            // dateFormat: "yyyy-MM-dd",
-            numericFields: [
-                "Open",
-                "High",
-                "Low",
-                "Close",
-                "Adj Close",
-                "Volume"
-            ]
-        });
-        processor.processMany(data);
-
-        // Indicate that the chart has been created
-        setChartCreated(true);
-
-        // Set data
-        am5.array.each(series, function (item) {
-            item.data.setAll(data);
-        });
-    }
 
     useEffect(() => {
         oneTimeStateSetting && oneTimeStateSetting.data && parsedMessage && parsedMessage.data && parsedMessage.data.length && addData(parsedMessage.data);
@@ -333,12 +290,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
         if (valueSeries && sbSeries) {
             valueSeries.data.setAll(data);
             sbSeries.data.setAll(data);
-
-            // Set data
-            // am5.array.each([valueSeries, sbSeries], function (item) {
-            //     console.log({ item });
-            //     item?.data?.setAll(data);
-            // });
         }
     }
 
