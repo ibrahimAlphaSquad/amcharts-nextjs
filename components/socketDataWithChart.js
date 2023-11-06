@@ -75,7 +75,7 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
 
     let root, stockChart, mainPanel, valueAxis, dateAxis, valueSeries, valueLegend, volumeAxisRenderer, volumeValueAxis, volumeSeries, sbSeries, scrollbar, sbDateAxis, sbValueAxis, lastDataItem, lastValue, toolbar;
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         // Initialize chart
         root = am5.Root.new('chartdiv');
         root.setThemes([am5themes_Animated.new(root)]);
@@ -210,7 +210,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
         });
 
         // Stock toolbar
-        // https://www.amcharts.com/docs/v5/charts/stock/toolbar/
         toolbar = am5stock.StockToolbar.new(root, {
             container: document.getElementById("chartcontrols"),
             stockChart: stockChart,
@@ -219,11 +218,11 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
                     stockChart: stockChart,
                     legend: valueLegend
                 }),
-                am5stock.DateRangeSelector.new(root, {
-                    stockChart: stockChart
-                }),
                 am5stock.PeriodSelector.new(root, {
-                    stockChart: stockChart
+                    stockChart: stockChart,
+                    periods: [
+                        { timeUnit: "minute", count: 1, name: "1Minute" },
+                    ]
                 }),
                 am5stock.DrawingControl.new(root, {
                     stockChart: stockChart
@@ -238,7 +237,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
         });
 
         // Load initial data for the first series using the simulated socket datafirst
-        // oneTimeStateSetting && oneTimeStateSetting.data && oneTimeStateSetting.data.length && processDataAndLoad(oneTimeStateSetting.data, [valueSeries, sbSeries]);
         chartRef.current = stockChart;
 
         // Assign the series to refs after creation
