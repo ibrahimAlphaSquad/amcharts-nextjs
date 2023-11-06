@@ -222,6 +222,7 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
                     stockChart: stockChart,
                     periods: [
                         { timeUnit: "minute", count: 1, name: "1Minute" },
+                        { timeUnit: "max", name: "Max" },
                     ]
                 }),
                 am5stock.DrawingControl.new(root, {
@@ -268,6 +269,12 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
                     Close: parseFloat(newDataItem[4]),
                     Volume: parseFloat(newDataItem[5])
                 };
+
+                // TODO: To remove old data to avoid browser resources consumption issue
+                // if (dataRef.current.length === 2000) {
+                //     console.log({ dataCount: dataRef.current.length });
+                //     dataRef.current.shift();
+                // }
 
                 // Push the new data point to the current data set
                 dataRef.current.push(newItem);
