@@ -18,7 +18,6 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
     const sbSeriesRef = useRef(null);
 
     const [oneTimeStateSetting, setOneTimeStateSetting] = useState(null);
-    const [chartCreated, setChartCreated] = useState(false);
 
     // Basetime of chart
     const baseInterval = {
@@ -54,7 +53,7 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
 
     // This effect runs whenever lastMessage changes
     useEffect(() => {
-        if (lastMessage !== null && chartCreated) {
+        if (lastMessage !== null) {
             const messageData = JSON.parse(lastMessage.data);
             if (messageData?.arg?.channel === channel && messageData?.arg?.instId === instId) {
                 if (messageData?.data?.length) {
@@ -62,7 +61,7 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
                 }
             }
         }
-    }, [lastMessage, instId, chartCreated]); // Dependencies
+    }, [lastMessage, instId]); // Dependencies
 
     // You can use lastMessage for the most recent message
     const parsedMessage = lastMessage ? JSON.parse(lastMessage.data) : null;
@@ -270,11 +269,11 @@ const SocketDataWithChart = ({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
                     Volume: parseFloat(newDataItem[5])
                 };
 
-                // TODO: To remove old data to avoid browser resources consumption issue
-                // if (dataRef.current.length === 2000) {
-                //     console.log({ dataCount: dataRef.current.length });
-                //     dataRef.current.shift();
-                // }
+                // To remove old data to avoid browser resources consumption issue
+                if (dataRef.current.length === 2000) {
+                    console.log({ dataCount: dataRef.current.length });
+                    dataRef.current.shift();
+                }
 
                 // Push the new data point to the current data set
                 dataRef.current.push(newItem);
