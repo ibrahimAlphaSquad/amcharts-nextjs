@@ -38,8 +38,8 @@ export default function Home({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
   const parsedMessage = lastMessage ? JSON.parse(lastMessage.data) : null;
 
   return (
-    <main className={`flex min-h-screen flex-col items-center justify-between ${inter.className}`}>
-      <div className='p-4 flex flex-col items-center justify-center gap-3 w-full'>
+    <main className={`flex min-h-screen flex-col items-center gap-6 ${inter.className}`}>
+      <div className='flex flex-col items-center justify-center gap-3 w-full'>
         <h2 className="text-xl font-bold">{instId}</h2>
         <h3>Channel: {channel}</h3>
         <div className='flex flex-col justify-center items-center gap-2'>
@@ -50,8 +50,10 @@ export default function Home({ instId = "BTC-USD-SWAP", channel = "mark-price-ca
           })}
         </div>
       </div>
-      <CandleChart instId="BTC-USD-SWAP" channel="mark-price-candle1m" lastMessage={lastMessage} />
-      <LineChart instId="BTC-USD-SWAP" channel="mark-price-candle1m" lastMessage={lastMessage}/>
+      <div className='flex items-center gap-1 w-full border border-gray-900'>
+        <CandleChart instId="BTC-USD-SWAP" channel="mark-price-candle1m" lastMessage={lastMessage} />
+        <LineChart instId="BTC-USD-SWAP" channel="mark-price-candle1m" lastMessage={lastMessage} />
+      </div>
     </main>
   )
 }

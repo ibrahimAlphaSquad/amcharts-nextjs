@@ -34,7 +34,7 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
 
     useLayoutEffect(() => {
         // Initialize chart
-        root = am5.Root.new('chartdiv');
+        root = am5.Root.new('candleChartDiv');
         root.setThemes([am5themes_Animated.new(root)]);
 
         stockChart = root.container.children.push(
@@ -203,6 +203,7 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
 
     // Function to add new data from the WebSocket to the chart
     function addData(newDataArray) {
+        console.log(newDataArray[0][0])
         // Check if the chart and series have been initialized
         if (chartRef.current) {
             // Process and append each new data point
@@ -234,7 +235,7 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
 
     // Function to update the chart's series with a new data set
     function updateChartWithData(data) {
-        console.log({ data });
+        // console.log({ data });
         // Assuming chartRef.current is an object containing references to the valueSeries and sbSeries
         const { valueSeries, sbSeries } = chartRef.current;
 
@@ -249,7 +250,7 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
         <div className="w-full h-full">
             <h1 className="py-2 text-center font-bold text-2xl text-gray-900">Candle Chart</h1>
             <div id="chartcontrols" ref={chartControlsRef} style={{ height: "auto", padding: "5px 45px 0 15px" }} />
-            <div id="chartdiv" ref={chartRef} style={{ width: "100%", height: "500px" }} />
+            <div id="candleChartDiv" ref={chartRef} style={{ width: "100%", height: "500px" }} />
         </div>
     );
 };
