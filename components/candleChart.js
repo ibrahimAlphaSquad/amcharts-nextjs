@@ -18,6 +18,9 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
 
     // console.log("Candle Chart props", { instId, channel, lastMessage });
 
+    // You can use lastMessage for the most recent message
+    const parsedMessage = lastMessage ? JSON.parse(lastMessage.data) : null;
+
     // This effect runs whenever lastMessage changes
     useEffect(() => {
         if (lastMessage !== null) {
@@ -177,10 +180,10 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
                 }),
                 am5stock.PeriodSelector.new(root, {
                     stockChart: stockChart,
-                    periods: [
-                        { timeUnit: "minute", count: 1, name: "1Minute" },
-                        { timeUnit: "max", name: "Max" },
-                    ]
+                    // periods: [
+                    //     { timeUnit: "minute", count: 1, name: "1Minute" },
+                    //     { timeUnit: "max", name: "Max" },
+                    // ]
                 }),
                 am5stock.DrawingControl.new(root, {
                     stockChart: stockChart
@@ -249,6 +252,22 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
     return (
         <div className="w-full h-full">
             <h1 className="py-2 text-center font-bold text-2xl text-gray-900">Candle Chart</h1>
+            <div className='flex flex-col items-center justify-center gap-3 w-full'>
+                <h2 className="text-xl font-bold">{instId}</h2>
+                <h3>Channel: {channel}</h3>
+                <div className='flex flex-col justify-center items-center gap-2'>
+                    {parsedMessage && parsedMessage.data && parsedMessage.data.length && parsedMessage.data[0] && (
+                        <>
+                            <p>Opening time of the candlestick, Unix timestamp format in milliseconds,: {parsedMessage.data[0][0]}</p>
+                            <p>Open price: {parsedMessage.data[0][1]}</p>
+                            <p>Highest price: {parsedMessage.data[0][2]}</p>
+                            <p>Lowest price: {parsedMessage.data[0][3]}</p>
+                            <p>Close price: {parsedMessage.data[0][4]}</p>
+                            <p>The state of candlesticks.: {parsedMessage.data[0][5]}</p>
+                        </>
+                    )}
+                </div>
+            </div>
             <div id="chartcontrols" ref={chartControlsRef} style={{ height: "auto", padding: "5px 45px 0 15px" }} />
             <div id="candleChartDiv" ref={chartRef} style={{ width: "100%", height: "500px" }} />
         </div>
