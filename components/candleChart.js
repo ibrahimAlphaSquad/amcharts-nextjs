@@ -36,6 +36,8 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
     let root, stockChart, mainPanel, valueAxis, dateAxis, valueSeries, valueLegend, volumeAxisRenderer, volumeValueAxis, volumeSeries, sbSeries, scrollbar, sbDateAxis, sbValueAxis, lastDataItem, lastValue, toolbar;
 
     useLayoutEffect(() => {
+        // const startTime = performance.now(); // Start timing
+
         // Initialize chart
         root = am5.Root.new('candleChartDiv');
         root.setThemes([am5themes_Animated.new(root)]);
@@ -197,6 +199,15 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
             ]
         });
 
+        // // Check Performance
+        // root.events.on("framestarted", function () {
+        //     const endTime = performance.now();
+        //     console.log("Line Chart Load Time: ", endTime - startTime);
+
+        //     // Optionally, remove this event listener after the first invocation
+        //     root.events.off("framestarted");
+        // });
+
         chartRef.current = { valueSeries, sbSeries, stockChart, root };
 
         return () => {
@@ -206,7 +217,6 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
 
     // Function to add new data from the WebSocket to the chart
     function addData(newDataArray) {
-        console.log(newDataArray[0][0])
         // Check if the chart and series have been initialized
         if (chartRef.current) {
             // Process and append each new data point
@@ -258,7 +268,7 @@ const CandleChart = ({ instId, channel, lastMessage = null }) => {
                 <div className='flex flex-col justify-center items-center gap-2'>
                     {parsedMessage && parsedMessage.data && parsedMessage.data.length && parsedMessage.data[0] && (
                         <>
-                            <p>Opening time of the candlestick, Unix timestamp format in milliseconds,: {parsedMessage.data[0][0]}</p>
+                            <p>Opening time of the candlestick, Unix timestamp format in milliseconds: {parsedMessage.data[0][0]}</p>
                             <p>Open price: {parsedMessage.data[0][1]}</p>
                             <p>Highest price: {parsedMessage.data[0][2]}</p>
                             <p>Lowest price: {parsedMessage.data[0][3]}</p>

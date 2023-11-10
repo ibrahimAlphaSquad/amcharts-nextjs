@@ -61,6 +61,8 @@ function LineChart({ tickerChannel = "index-tickers", tickerInstId = "BTC-USDT" 
     let root, lineChart, easing, xAxis, yAxis, series, container, circle0, circle1, cursor, scrollbarX, scrollbarY, sbChart, sbxAxis, sbyAxis, sbSeries;
 
     useLayoutEffect(() => {
+        // const startTime = performance.now(); // Start timing
+
         // Initialize chart
         root = am5.Root.new('lineChartDiv');
         root.setThemes([
@@ -243,6 +245,15 @@ function LineChart({ tickerChannel = "index-tickers", tickerInstId = "BTC-USDT" 
 
         lineChart.appear(1000, 100);
 
+        // // Check Performance
+        // root.events.on("framestarted", function () {
+        //     const endTime = performance.now();
+        //     console.log("Line Chart Load Time: ", endTime - startTime);
+
+        //     // Optionally, remove this event listener after the first invocation
+        //     root.events.off("framestarted");
+        // });
+
         chartRef.current = { root, lineChart, easing, xAxis, yAxis, series, container, circle0, circle1, cursor, scrollbarX, scrollbarY, sbChart, sbxAxis, sbyAxis, sbSeries };
 
         return () => {
@@ -308,7 +319,7 @@ function LineChart({ tickerChannel = "index-tickers", tickerInstId = "BTC-USDT" 
     }
 
     return (
-        <div className='p-4 flex flex-col items-center justify-center gap-3 w-full border-l-2 border-gray-900'>
+        <div className='p-4 flex flex-col items-center justify-center gap-3 w-full border-t-2 border-gray-900'>
             <h1 className="py-2 text-center font-bold text-2xl text-gray-900">Line Chart</h1>
             <div className='flex flex-col items-center justify-center gap-3 w-full'>
                 <h2 className="text-xl font-bold">{tickerInstId}</h2>
